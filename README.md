@@ -1,2 +1,1 @@
-# semrush_test_task
-Test task for SEMrush
+# Test task for SEMrush
