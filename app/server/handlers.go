@@ -18,7 +18,7 @@ func (s *Server) respond(w http.ResponseWriter, data interface{}, status int) {
 				"function": "respond",
 				"error":    err,
 				"payload":  payload,
-			}).Warning("Internal server error.")
+			}).Warning("Failed to write payload.")
 
 			status = http.StatusInternalServerError
 		}
@@ -31,10 +31,42 @@ func (s *Server) respond(w http.ResponseWriter, data interface{}, status int) {
 
 func (s *Server) handlerPing() http.HandlerFunc {
 	type response struct {
-		OK bool `json:"ok"`
+		Ok bool `json:"ok"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		resp := response{OK: true}
+		resp := response{Ok: true}
+		s.respond(w, resp, http.StatusOK)
+	}
+}
+
+func (s *Server) handlerSummary() http.HandlerFunc {
+	type response struct {
+		Domain         string `json:"domain"`
+		PositionsCount uint   `json:"positions_count"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		domain := r.URL.Query().Get("domain")
+		if domain == "" {
+			s.logger.Warning("`domain` param is required")
+			s.respond(w, nil, http.StatusBadRequest)
+		}
+
+		positionsCount, err := s.storage.Positions().Summary(domain)
+		if err != nil {
+			s.logger.WithFields(logrus.Fields{
+				"package":  "server",
+				"function": "handlerSummary",
+				"error":    err,
+				"domain":   domain,
+			}).Warning("Failed to get summary for domain")
+
+			s.respond(w, nil, http.StatusInternalServerError)
+		}
+
+		resp := response{
+			Domain:         domain,
+			PositionsCount: positionsCount}
 		s.respond(w, resp, http.StatusOK)
 	}
 }

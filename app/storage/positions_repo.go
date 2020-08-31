@@ -9,7 +9,8 @@ type PositionsRepo struct {
 func (p *PositionsRepo) Summary(domain string) (uint, error) {
 	var count uint
 	err := p.storage.db.QueryRow(
-		"SELECT COUNT(position) WHERE domain=?", domain).Scan(&count)
+		"SELECT COUNT(position) FROM positions WHERE domain=?",
+		domain).Scan(&count)
 
 	return count, err
 }
