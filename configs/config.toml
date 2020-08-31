@@ -1,2 +1,3 @@
 bind_addr = ":8089"
 log_level = "debug"
+db_file = "../positions.db"

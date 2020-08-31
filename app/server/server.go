@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/futurexx/semrush_test_task/app/store"
+	"github.com/futurexx/semrush_test_task/app/storage"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -12,10 +12,10 @@ import (
 
 // Server ...
 type Server struct {
-	config *Config
-	logger *logrus.Logger
-	router *mux.Router
-	store  *store.Store
+	config  *Config
+	logger  *logrus.Logger
+	router  *mux.Router
+	storage *storage.Storage
 }
 
 func new(config *Config) *Server {
@@ -38,9 +38,13 @@ func (s *Server) configureLogger() error {
 	return nil
 }
 
-// handlers registration
 func (s *Server) configureRouter() {
 	s.addRoute("/api/monitoring/ping", s.handlerPing(), "GET")
+}
+
+func (s *Server) configureStorage() {
+	st := storage.New(s.config.StorageConfig)
+	s.storage = st
 }
 
 // Start is a method of starting server
@@ -55,6 +59,9 @@ func Start(config *Config) error {
 
 	server.configureRouter()
 	server.logger.Info("Router configurated")
+
+	server.configureStorage()
+	server.logger.Info("Storage configurated")
 
 	server.logger.Info("Starting server...")
 	return http.ListenAndServe(server.config.BindAddr, handlers.LoggingHandler(os.Stdout, server.router))
