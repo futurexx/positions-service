@@ -43,7 +43,7 @@ func (s *Server) configureRouter() {
 }
 
 func (s *Server) configureStorage() {
-	st := storage.New(s.config.StorageConfig)
+	st := storage.New(s.config.Storage)
 	s.storage = st
 }
 
@@ -53,6 +53,7 @@ func Start(config *Config) error {
 
 	err := server.configureLogger()
 	if err != nil {
+		server.logger.Error("Failed to configure logger")
 		return err
 	}
 	server.logger.Info("Logger configureted")
@@ -62,6 +63,17 @@ func Start(config *Config) error {
 
 	server.configureStorage()
 	server.logger.Info("Storage configurated")
+
+	if err := server.storage.Open(); err != nil {
+		server.logger.Error("Failed to create database connection")
+		return err
+	}
+	server.logger.Info("Database connected")
+	defer func() {
+		if err := server.storage.Close(); err != nil {
+			server.logger.Error("Failed to close database connection")
+		}
+	}()
 
 	server.logger.Info("Starting server...")
 	return http.ListenAndServe(server.config.BindAddr, handlers.LoggingHandler(os.Stdout, server.router))
