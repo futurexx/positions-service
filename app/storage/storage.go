@@ -8,8 +8,9 @@ import (
 
 // Storage is layout between handlers and database
 type Storage struct {
-	config *Config
-	db     *sql.DB
+	config        *Config
+	db            *sql.DB
+	positionsRepo *PositionsRepo
 }
 
 // New init Store with config
@@ -35,4 +36,13 @@ func (s *Storage) Close() error {
 	}
 
 	return nil
+}
+
+// Positions get access to positions table repo
+func (s *Storage) Positions() *PositionsRepo {
+	if s.positionsRepo == nil {
+		s.positionsRepo = &PositionsRepo{storage: s}
+	}
+
+	return s.positionsRepo
 }
