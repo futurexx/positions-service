@@ -14,3 +14,7 @@ func (p *PositionsRepo) Summary(domain string) (uint, error) {
 
 	return count, err
 }
+
+func (p *PositionsRepo) Positions(domain string, order string, page uint) {
+	
+}

@@ -1,4 +1,4 @@
-module github.com/futurexx/semrush_test_task
+module github.com/futurexx/positions-service
 
 go 1.14
 

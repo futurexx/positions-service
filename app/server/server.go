@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/futurexx/semrush_test_task/app/storage"
+	"github.com/futurexx/positions-service/app/storage"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"

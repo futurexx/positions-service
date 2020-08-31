@@ -5,7 +5,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 
-	"github.com/futurexx/semrush_test_task/app/server"
+	"github.com/futurexx/positions-service/app/server"
 )
 
 var configPath string

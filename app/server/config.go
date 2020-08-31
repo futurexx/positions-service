@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/futurexx/semrush_test_task/app/storage"
+	"github.com/futurexx/positions-service/app/storage"
 )
 
 // Config is view of toml config file
