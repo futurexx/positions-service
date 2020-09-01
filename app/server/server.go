@@ -41,6 +41,7 @@ func (s *Server) configureLogger() error {
 func (s *Server) configureRouter() {
 	s.addRoute("/api/monitoring/ping", s.handlerPing(), "GET")
 	s.addRoute("/api/positions/summary", s.handlerSummary(), "GET")
+	s.addRoute("/api/positions", s.handlerPositions(), "GET")
 }
 
 func (s *Server) configureStorage() {

@@ -1,5 +1,7 @@
 package storage
 
+import "time"
+
 // PositionsRepo is repo for `positions` table
 type PositionsRepo struct {
 	storage *Storage
@@ -16,17 +18,17 @@ func (p *PositionsRepo) Summary(domain string) (uint, error) {
 }
 
 type DomainPosition struct {
-	keyword  string
-	position uint
-	url      string
-	volume   uint
-	results  uint
-	cpc      float32
-	updated  uint
+	Keyword  string
+	Position uint
+	URL      string
+	Volume   uint
+	Results  uint
+	Cpc      float32
+	Updated  time.Time
 }
 
 // Positions get list of position for domain
-func (p *PositionsRepo) Positions(domain string, order string, limit uint, offset uint) ([]DomainPosition, error) {
+func (p *PositionsRepo) Positions(domain string, order string, limit uint64, offset uint64) ([]DomainPosition, error) {
 	var res []DomainPosition
 
 	rows, err := p.storage.db.Query(
@@ -40,7 +42,7 @@ func (p *PositionsRepo) Positions(domain string, order string, limit uint, offse
 	for rows.Next() {
 		t := DomainPosition{}
 
-		err := rows.Scan(&t.keyword, &t.position, &t.url, &t.volume, &t.results, &t.cpc, &t.updated)
+		err := rows.Scan(&t.Keyword, &t.Position, &t.URL, &t.Volume, &t.Results, &t.Cpc, &t.Updated)
 		if err != nil {
 			return nil, err
 		}
