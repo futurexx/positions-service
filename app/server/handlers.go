@@ -29,6 +29,7 @@ func (s *Server) respond(w http.ResponseWriter, data interface{}, status int) {
 	}
 }
 
+// /api/monitoring/ping
 func (s *Server) handlerPing() http.HandlerFunc {
 	type response struct {
 		Ok bool `json:"ok"`
@@ -39,6 +40,7 @@ func (s *Server) handlerPing() http.HandlerFunc {
 	}
 }
 
+// /api/posinions/summary
 func (s *Server) handlerSummary() http.HandlerFunc {
 	type response struct {
 		Domain         string `json:"domain"`
@@ -68,5 +70,26 @@ func (s *Server) handlerSummary() http.HandlerFunc {
 			Domain:         domain,
 			PositionsCount: positionsCount}
 		s.respond(w, resp, http.StatusOK)
+	}
+}
+
+// /api/positions
+func (s *Server) handlerPositions() http.HandlerFunc {
+	type position struct {
+		Keyword  string  `json:"keyword"`
+		Position uint    `json:"position"`
+		URL      string  `json:"url"`
+		Volume   uint    `json:"volume"`
+		Results  uint    `json:"results"`
+		Cpc      float32 `json:"cpc"`
+		Updated  string  `json:"updated"`
+	}
+
+	type response struct {
+		Domain    string     `json:"domain"`
+		Positions []position `json:"position"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
 	}
 }
