@@ -2,4 +2,4 @@ bind_addr = ":8089"
 log_level = "debug"
 
 [storage]
-db_file = "../positions.db"
+db_file = "positions.db"
