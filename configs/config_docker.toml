@@ -1,0 +1,5 @@
+bind_addr = ":8089"
+log_level = "debug"
+
+[storage]
+db_file = "/go/src/position-service/positions.db"

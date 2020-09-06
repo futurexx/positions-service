@@ -10,31 +10,34 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// log - logger
+var log = logrus.New()
+
 // Server ...
 type Server struct {
 	config  *Config
-	logger  *logrus.Logger
 	router  *mux.Router
-	storage *storage.Storage
+	storage storage.IStorage
 }
 
 func new(config *Config) *Server {
 	server := &Server{
 		config: config,
-		logger: logrus.New(),
 		router: mux.NewRouter(),
 	}
 
 	return server
 }
 
-func (s *Server) configureLogger() error {
-	level, err := logrus.ParseLevel(s.config.LogLevel)
+// ConfigureLogger ...
+func configureLogger(logLevel string) error {
+
+	level, err := logrus.ParseLevel(logLevel)
 	if err != nil {
 		return err
 	}
 
-	s.logger.SetLevel(level)
+	log.SetLevel(level)
 	return nil
 }
 
@@ -53,30 +56,29 @@ func (s *Server) configureStorage() {
 func Start(config *Config) error {
 	server := new(config)
 
-	err := server.configureLogger()
-	if err != nil {
-		server.logger.Error("Failed to configure logger")
+	configureLogger(config.LogLevel)
+	if err := configureLogger(config.LogLevel); err != nil {
 		return err
 	}
-	server.logger.Info("Logger configureted")
+	log.Info("Logger configureted")
 
 	server.configureRouter()
-	server.logger.Info("Router configurated")
+	log.Info("Router configurated")
 
 	server.configureStorage()
-	server.logger.Info("Storage configurated")
+	log.Info("Storage configurated")
 
 	if err := server.storage.Open(); err != nil {
-		server.logger.Error("Failed to create database connection")
+		log.Error("Failed to create database connection")
 		return err
 	}
-	server.logger.Info("Database connected")
+	log.Info("Database connected")
 	defer func() {
 		if err := server.storage.Close(); err != nil {
-			server.logger.Error("Failed to close database connection")
+			log.Error("Failed to close database connection")
 		}
 	}()
 
-	server.logger.Info("Starting server...")
+	log.Info("Starting server...")
 	return http.ListenAndServe(server.config.BindAddr, handlers.LoggingHandler(os.Stdout, server.router))
 }

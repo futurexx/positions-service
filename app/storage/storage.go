@@ -6,11 +6,18 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// IStorage is a Storage Interface
+type IStorage interface {
+	Open() error
+	Close() error
+	Positions() IPositionsRepo
+}
+
 // Storage is layout between handlers and database
 type Storage struct {
 	config        *Config
 	db            *sql.DB
-	positionsRepo *PositionsRepo
+	positionsRepo IPositionsRepo
 }
 
 // New init Store with config
@@ -39,7 +46,7 @@ func (s *Storage) Close() error {
 }
 
 // Positions get access to positions table repo
-func (s *Storage) Positions() *PositionsRepo {
+func (s *Storage) Positions() IPositionsRepo {
 	if s.positionsRepo == nil {
 		s.positionsRepo = &PositionsRepo{storage: s}
 	}

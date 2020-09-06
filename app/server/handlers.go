@@ -15,7 +15,7 @@ func (s *Server) respond(w http.ResponseWriter, data interface{}, status int) {
 		payload, _ := json.Marshal(data)
 		_, err := w.Write(payload)
 		if err != nil {
-			s.logger.WithFields(logrus.Fields{
+			log.WithFields(logrus.Fields{
 				"package":  "server",
 				"function": "respond",
 				"error":    err,
@@ -52,13 +52,13 @@ func (s *Server) handlerSummary() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		domain := r.URL.Query().Get("domain")
 		if domain == "" {
-			s.logger.Warning("`domain` param is required")
+			log.Warning("`domain` param is required")
 			s.respond(w, nil, http.StatusBadRequest)
 		}
 
 		positionsCount, err := s.storage.Positions().Summary(domain)
 		if err != nil {
-			s.logger.WithFields(logrus.Fields{
+			log.WithFields(logrus.Fields{
 				"package":  "server",
 				"function": "handlerSummary",
 				"error":    err,
@@ -103,14 +103,14 @@ func (s *Server) handlerPositions() http.HandlerFunc {
 		order := GetOrDefault(&values, "order", defaultOrder)
 		domain := r.URL.Query().Get("domain")
 		if domain == "" {
-			s.logger.Warning("`domain` param is required")
+			// s.logger.Warning("`domain` param is required")
 			s.respond(w, nil, http.StatusBadRequest)
 		}
 
 		page, err := strconv.ParseUint(
 			GetOrDefault(&values, "page", defaultPage), 10, 32)
 		if err != nil {
-			s.logger.WithFields(logrus.Fields{
+			log.WithFields(logrus.Fields{
 				"package":  "server",
 				"function": "handlerPositions",
 				"error":    err,
@@ -124,12 +124,12 @@ func (s *Server) handlerPositions() http.HandlerFunc {
 
 		positions, err := s.storage.Positions().Positions(domain, order, limit, offset)
 		if err != nil {
-			s.logger.WithFields(logrus.Fields{
-				"package":  "server",
-				"function": "handlerPositions",
-				"error":    err,
-				"domain":   domain,
-			}).Warning("Failed to get positions for domain")
+			// s.logger.WithFields(logrus.Fields{
+			// 	"package":  "server",
+			// 	"function": "handlerPositions",
+			// 	"error":    err,
+			// 	"domain":   domain,
+			// }).Warning("Failed to get positions for domain")
 
 			s.respond(w, nil, http.StatusInternalServerError)
 		}

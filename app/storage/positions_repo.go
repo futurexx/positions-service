@@ -2,6 +2,12 @@ package storage
 
 import "time"
 
+// IPositionsRepo ...
+type IPositionsRepo interface {
+	Summary(string) (uint, error)
+	Positions(string, string, uint64, uint64) ([]DomainPosition, error)
+}
+
 // PositionsRepo is repo for `positions` table
 type PositionsRepo struct {
 	storage *Storage
@@ -17,6 +23,7 @@ func (p *PositionsRepo) Summary(domain string) (uint, error) {
 	return count, err
 }
 
+// DomainPosition is a struct of domain position
 type DomainPosition struct {
 	Keyword  string
 	Position uint
